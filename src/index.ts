@@ -5,17 +5,35 @@ import {
     validateFxn,
 } from './helpers';
 
-// import { describe, expect, it } from '@jest/globals';
-
 class Node {
     data: number;
     left: Node;
     right: Node;
+    height: number;
 
     constructor(value: number = null, left: Node = null, right: Node = null) {
         this.data = value;
         this.left = null;
         this.right = null;
+        this.height = 1;
+    }
+
+    push(value: number) {
+        const node = new Node(value);
+
+        if (value < this.data) {
+            if (this.left !== null) {
+                this.left.push(value);
+            } else {
+                this.left = new Node(value);
+            }
+        } else {
+            if (this.right !== null) {
+                this.right.push(value);
+            } else {
+                this.right = new Node(value);
+            }
+        }
     }
 
     serialize() {
@@ -27,7 +45,7 @@ class Node {
     }
 }
 
-export class BST {
+export class AVLTree {
     root: Node;
 
     constructor() {
@@ -35,33 +53,12 @@ export class BST {
     }
 
     push(value) {
-        const node = new Node(value);
-
-        if (this.root === null) {
-            this.root = node;
+        if (!this.root) {
+            this.root = new Node(value);
         } else {
-            let continueRun = true;
-            let currentNode = this.root;
-            while (continueRun) {
-                if (value < currentNode.data) {
-                    if (currentNode.left === null) {
-                        currentNode.left = node;
-                        continueRun = false;
-                    } else {
-                        currentNode = currentNode.left;
-                    }
-                } else {
-                    if (currentNode.right === null) {
-                        currentNode.right = node;
-                        continueRun = false;
-                    } else {
-                        currentNode = currentNode.right;
-                    }
-                }
-            }
+            this.root.push(value);
         }
     }
-
     toObject() {
         return this.root.serialize();
     }
@@ -69,19 +66,20 @@ export class BST {
 
 consoleStart();
 
-const nums = [3, 1, 5, 6, 8];
-const tree = new BST();
+const nums = [10, 1, 6, 15, 16, 8];
+const tree = new AVLTree();
 nums.map((num) => tree.push(num));
 
 const objs = tree.toObject();
 
 const tree2 = tree;
 
-validateFxn(objs.data, 3);
-validateFxn(objs.left.data, 1);
-validateFxn(objs.right.data, 5);
-validateFxn(objs.right.right.data, 6);
-validateFxn(objs.right.right.right.data, 8);
+validateFxn(objs.data, 10);
+validateFxn(objs.left.data, 15);
+validateFxn(objs.left.left.data, 16);
+// validateFxn(objs.right.data, 5);
+// validateFxn(objs.right.right.data, 6);
+// validateFxn(objs.right.right.right.data, 8);
 
 consoleEnd();
 consoleBuffer();
