@@ -27,12 +27,46 @@ class Node {
             } else {
                 this.left = new Node(value);
             }
+
+            this.doINeedToIncrementHeightLeft();
         } else {
             if (this.right !== null) {
                 this.right.push(value);
             } else {
                 this.right = new Node(value);
             }
+
+            this.doINeedToIncrementHeightRight();
+        }
+    }
+
+    balanceTreeIfNeeded() {
+        const rightHeight = this.right ? this.right.height : 0;
+        const leftHeight = this.left ? this.left.height : 0;
+
+        if (leftHeight > rightHeight + 1) {
+            const leftRightHeight = this.right.left
+                ? this.right.left.height
+                : 0;
+            const leftLeftHeight = this.left ? this.left.height : 0;
+
+            if (leftRightHeight > leftLeftHeight) {
+                this.left.rotateLeft();
+            }
+        }
+    }
+
+    rotateLeft() {}
+
+    doINeedToIncrementHeightLeft() {
+        if (!this.right) {
+            this.height = this.left.height + 1;
+        }
+    }
+
+    doINeedToIncrementHeightRight() {
+        if (!this.left) {
+            this.height = this.right.height + 1;
         }
     }
 

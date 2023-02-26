@@ -14,13 +14,14 @@ var Node = /** @class */ (function () {
     }
     Node.prototype.push = function (value) {
         var node = new Node(value);
-        if (value > this.data) {
+        if (value < this.data) {
             if (this.left !== null) {
                 this.left.push(value);
             }
             else {
                 this.left = new Node(value);
             }
+            this.doINeedToIncrementLeft();
         }
         else {
             if (this.right !== null) {
@@ -29,6 +30,17 @@ var Node = /** @class */ (function () {
             else {
                 this.right = new Node(value);
             }
+            this.doINeedToIncrementRight();
+        }
+    };
+    Node.prototype.doINeedToIncrementLeft = function () {
+        if (!this.right) {
+            this.height = this.left.height + 1;
+        }
+    };
+    Node.prototype.doINeedToIncrementRight = function () {
+        if (!this.left) {
+            this.height = this.right.height + 1;
         }
     };
     Node.prototype.serialize = function () {
