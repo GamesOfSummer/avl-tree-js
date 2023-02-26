@@ -41,19 +41,30 @@ class Node {
     }
 
     balanceTreeIfNeeded() {
-        const rightHeight = this.right ? this.right.height : 0;
-        const leftHeight = this.left ? this.left.height : 0;
+        const rightHeight = this.ifNotNullReturnHeight(this.right);
+        const leftHeight = this.ifNotNullReturnHeight(this.left);
 
-        if (leftHeight > rightHeight + 1) {
-            const leftRightHeight = this.right.left
-                ? this.right.left.height
-                : 0;
-            const leftLeftHeight = this.left ? this.left.height : 0;
+        if (leftHeight > rightHeight + 1 || leftHeight + 1 < rightHeight) {
+            const leftRightHeight = this.ifNotNullReturnHeight(this.left.right);
+            const leftLeftHeight = this.ifNotNullReturnHeight(this.left.left);
+
+            const rightRightHeight = this.ifNotNullReturnHeight(
+                this.right.right
+            );
+            const rightLeftHeight = this.ifNotNullReturnHeight(this.right.left);
 
             if (leftRightHeight > leftLeftHeight) {
                 this.left.rotateLeft();
             }
         }
+    }
+
+    ifNotNullReturnHeight(node: Node) {
+        if (!node) {
+            return node.height;
+        }
+
+        return 0;
     }
 
     rotateLeft() {}
