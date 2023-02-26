@@ -3,43 +3,126 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AVLTree = void 0;
 var helpers_1 = require("./helpers");
 var Node = /** @class */ (function () {
-    function Node(value, left, right) {
-        if (value === void 0) { value = null; }
+    function Node(data, left, right) {
+        if (data === void 0) { data = null; }
         if (left === void 0) { left = null; }
         if (right === void 0) { right = null; }
-        this.data = value;
+        this.data = data;
         this.left = null;
         this.right = null;
         this.height = 1;
     }
-    Node.prototype.push = function (value) {
-        var node = new Node(value);
-        if (value < this.data) {
+    Node.prototype.push = function (data) {
+        if (this.goLeft(data)) {
             if (this.left !== null) {
-                this.left.push(value);
+                this.left.push(data);
             }
             else {
-                this.left = new Node(value);
+                this.left = new Node(data);
             }
-            this.doINeedToIncrementLeft();
+            this.doINeedToIncrementHeightLeft();
         }
         else {
             if (this.right !== null) {
-                this.right.push(value);
+                this.right.push(data);
             }
             else {
-                this.right = new Node(value);
+                this.right = new Node(data);
             }
-            this.doINeedToIncrementRight();
+            this.doINeedToIncrementHeightRight();
+        }
+        this.balanceTreeIfNeeded();
+    };
+    Node.prototype.goLeft = function (data) {
+        return data < this.data;
+    };
+    Node.prototype.balanceTreeIfNeeded = function () {
+        var rightHeight = this.ifNotNullReturnHeight(this.right);
+        var leftHeight = this.ifNotNullReturnHeight(this.left);
+        if (leftHeight > rightHeight + 1 || leftHeight + 1 < rightHeight) {
+            var leftRightHeight = 0;
+            var leftLeftHeight = 0;
+            var rightRightHeight = 0;
+            var rightLeftHeight = 0;
+            if (this.left) {
+                leftRightHeight = this.ifNotNullReturnHeight(this.left.right);
+                leftLeftHeight = this.ifNotNullReturnHeight(this.left.left);
+            }
+            if (this.right) {
+                rightRightHeight = this.ifNotNullReturnHeight(this.right.right);
+                rightLeftHeight = this.ifNotNullReturnHeight(this.right.left);
+            }
+            if (leftHeight > rightHeight + 1) {
+                if (leftRightHeight > leftLeftHeight) {
+                    this.left.rotateRight();
+                }
+                this.rotateLeft();
+            }
+            else if (rightHeight > leftHeight + 1) {
+                if (rightLeftHeight > rightRightHeight) {
+                    this.right.rotateLeft();
+                }
+                this.rotateRight();
+            }
         }
     };
-    Node.prototype.doINeedToIncrementLeft = function () {
-        if (!this.right) {
+    Node.prototype.ifNotNullReturnHeight = function (node) {
+        if (node) {
+            return node.height;
+        }
+        return 0;
+    };
+    Node.prototype.rotateLeft = function () {
+        var valueBefore = this.data;
+        var rightBefore = this.right;
+        this.data = this.left.data;
+        this.right = this.left;
+        this.left = this.left.left;
+        this.right.left = this.right.right;
+        this.right.right = rightBefore;
+        this.right.data = valueBefore;
+        this.right.updateHeights();
+        this.updateHeights();
+    };
+    Node.prototype.rotateRight = function () {
+        // store temp vars
+        var rightNode = this.right;
+        var rightRightNode = this.right.right;
+        var leftNode = this.left;
+        var leftLeftNode = this.left.left;
+        var rootData = this.data;
+        var rightData = this.right.data;
+        // swap data
+        this.data = rightData;
+        this.left.data = rootData;
+        // swap nodes
+        this.left = rightNode;
+        this.right = rightRightNode;
+        this.left.right = leftLeftNode;
+        this.left.left = leftNode;
+        this.left.updateHeights();
+        this.updateHeights();
+    };
+    Node.prototype.updateHeights = function () {
+        if (!this.right && !this.left) {
+            this.height = 1;
+        }
+        else if (!this.right ||
+            (this.left && this.right.height < this.left.height)) {
+            this.height = this.left.height + 1;
+        }
+        else {
+            //if (!this.left || this.right.height > this.left.height)
+            this.height = this.right.height + 1;
+        }
+    };
+    Node.prototype.doINeedToIncrementHeightLeft = function () {
+        if (!this.right || this.right.height < this.left.height) {
             this.height = this.left.height + 1;
         }
     };
-    Node.prototype.doINeedToIncrementRight = function () {
-        if (!this.left) {
+    Node.prototype.doINeedToIncrementHeightRight = function () {
+        if (!this.left || this.right.height > this.left.height) {
             this.height = this.right.height + 1;
         }
     };
@@ -56,12 +139,12 @@ var AVLTree = /** @class */ (function () {
     function AVLTree() {
         this.root = null;
     }
-    AVLTree.prototype.push = function (value) {
+    AVLTree.prototype.push = function (data) {
         if (!this.root) {
-            this.root = new Node(value);
+            this.root = new Node(data);
         }
         else {
-            this.root.push(value);
+            this.root.push(data);
         }
     };
     AVLTree.prototype.toObject = function () {
@@ -71,17 +154,32 @@ var AVLTree = /** @class */ (function () {
 }());
 exports.AVLTree = AVLTree;
 (0, helpers_1.consoleStart)();
-var nums = [10, 1, 6, 15, 16, 8];
+var nums = [3, 7, 4, 6, 5, 1, 10, 2, 9, 8];
 var tree = new AVLTree();
 nums.map(function (num) { return tree.push(num); });
-var objs = tree.toObject();
 var tree2 = tree;
-(0, helpers_1.validateFxn)(objs.data, 10);
-(0, helpers_1.validateFxn)(objs.left.data, 15);
-(0, helpers_1.validateFxn)(objs.left.left.data, 16);
-// validateFxn(objs.right.data, 5);
-// validateFxn(objs.right.right.data, 6);
-// validateFxn(objs.right.right.right.data, 8);
+var objs = tree.toObject();
+(0, helpers_1.validateFxn)(objs.data, 4);
+(0, helpers_1.validateFxn)(objs.left.data, 2);
+(0, helpers_1.validateFxn)(objs.left.left.data, 1);
+(0, helpers_1.validateFxn)(objs.left.left.left, null);
+(0, helpers_1.validateFxn)(objs.left.left.right, null);
+(0, helpers_1.validateFxn)(objs.left.right.data, 3);
+(0, helpers_1.validateFxn)(objs.left.right.left, null);
+(0, helpers_1.validateFxn)(objs.left.right.right, null);
+(0, helpers_1.validateFxn)(objs.right.data, 7);
+(0, helpers_1.validateFxn)(objs.right.left.data, 6);
+(0, helpers_1.validateFxn)(objs.right.left.right, null);
+(0, helpers_1.validateFxn)(objs.right.left.left.data, 5);
+(0, helpers_1.validateFxn)(objs.right.left.left.left, null);
+(0, helpers_1.validateFxn)(objs.right.left.left.right, null);
+(0, helpers_1.validateFxn)(objs.right.right.data, 9);
+(0, helpers_1.validateFxn)(objs.right.right.left.data, 8);
+(0, helpers_1.validateFxn)(objs.right.right.left.left, null);
+(0, helpers_1.validateFxn)(objs.right.right.left.right, null);
+(0, helpers_1.validateFxn)(objs.right.right.right.data, 10);
+(0, helpers_1.validateFxn)(objs.right.right.right.left, null);
+(0, helpers_1.validateFxn)(objs.right.right.right.right, null);
 (0, helpers_1.consoleEnd)();
 (0, helpers_1.consoleBuffer)();
 //# sourceMappingURL=index.js.map
