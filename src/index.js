@@ -13,7 +13,7 @@ var Node = /** @class */ (function () {
         this.height = 1;
     }
     Node.prototype.push = function (data) {
-        if (this.goLeft(data)) {
+        if (this.pushNodeLeft(data)) {
             if (this.left !== null) {
                 this.left.push(data);
             }
@@ -33,7 +33,7 @@ var Node = /** @class */ (function () {
         }
         this.balanceTreeIfNeeded();
     };
-    Node.prototype.goLeft = function (data) {
+    Node.prototype.pushNodeLeft = function (data) {
         return data < this.data;
     };
     Node.prototype.balanceTreeIfNeeded = function () {
@@ -73,33 +73,41 @@ var Node = /** @class */ (function () {
         return 0;
     };
     Node.prototype.rotateLeft = function () {
-        var valueBefore = this.data;
+        var dataBefore = this.data;
         var rightBefore = this.right;
         this.data = this.left.data;
         this.right = this.left;
         this.left = this.left.left;
         this.right.left = this.right.right;
         this.right.right = rightBefore;
-        this.right.data = valueBefore;
+        this.right.data = dataBefore;
         this.right.updateHeights();
         this.updateHeights();
     };
     Node.prototype.rotateRight = function () {
-        // store temp vars
-        var rightNode = this.right;
-        var rightRightNode = this.right.right;
-        var leftNode = this.left;
-        var leftLeftNode = this.left.left;
-        var rootData = this.data;
-        var rightData = this.right.data;
-        // swap data
-        this.data = rightData;
-        this.left.data = rootData;
-        // swap nodes
-        this.left = rightNode;
-        this.right = rightRightNode;
-        this.left.right = leftLeftNode;
-        this.left.left = leftNode;
+        // // store temp vars
+        // const rightNode = this.right;
+        // const rightRightNode = this.right.right;
+        // const leftNode = this.left;
+        // const leftLeftNode = this.left.left;
+        // const rootData = this.data;
+        // const rightData = this.right.data;
+        // // swap data
+        // this.data = rightData;
+        // this.left.data = rootData;
+        // // swap nodes
+        // this.left = rightNode;
+        // this.right = rightRightNode;
+        // this.left.right = leftLeftNode;
+        // this.left.left = leftNode;
+        var dataBefore = this.data;
+        var leftBefore = this.left;
+        this.data = this.right.data;
+        this.left = this.right;
+        this.right = this.right.right;
+        this.left.right = this.left.left;
+        this.left.left = leftBefore;
+        this.left.data = dataBefore;
         this.left.updateHeights();
         this.updateHeights();
     };
@@ -112,7 +120,6 @@ var Node = /** @class */ (function () {
             this.height = this.left.height + 1;
         }
         else {
-            //if (!this.left || this.right.height > this.left.height)
             this.height = this.right.height + 1;
         }
     };

@@ -19,7 +19,7 @@ class Node {
     }
 
     push(data: number) {
-        if (this.goLeft(data)) {
+        if (this.pushNodeLeft(data)) {
             if (this.left !== null) {
                 this.left.push(data);
             } else {
@@ -40,7 +40,7 @@ class Node {
         this.balanceTreeIfNeeded();
     }
 
-    goLeft(data: number) {
+    pushNodeLeft(data: number) {
         return data < this.data;
     }
 
@@ -89,14 +89,14 @@ class Node {
     }
 
     rotateLeft() {
-        const valueBefore = this.data;
+        const dataBefore = this.data;
         const rightBefore = this.right;
         this.data = this.left.data;
         this.right = this.left;
         this.left = this.left.left;
         this.right.left = this.right.right;
         this.right.right = rightBefore;
-        this.right.data = valueBefore;
+        this.right.data = dataBefore;
         this.right.updateHeights();
         this.updateHeights();
     }
@@ -134,7 +134,6 @@ class Node {
         ) {
             this.height = this.left.height + 1;
         } else {
-            //if (!this.left || this.right.height > this.left.height)
             this.height = this.right.height + 1;
         }
     }

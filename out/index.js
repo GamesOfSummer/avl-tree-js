@@ -13,7 +13,7 @@ var Node = /** @class */ (function () {
         this.height = 1;
     }
     Node.prototype.push = function (data) {
-        if (this.goLeft(data)) {
+        if (this.pushNodeLeft(data)) {
             if (this.left !== null) {
                 this.left.push(data);
             }
@@ -33,7 +33,7 @@ var Node = /** @class */ (function () {
         }
         this.balanceTreeIfNeeded();
     };
-    Node.prototype.goLeft = function (data) {
+    Node.prototype.pushNodeLeft = function (data) {
         return data < this.data;
     };
     Node.prototype.balanceTreeIfNeeded = function () {
@@ -112,7 +112,6 @@ var Node = /** @class */ (function () {
             this.height = this.left.height + 1;
         }
         else {
-            //if (!this.left || this.right.height > this.left.height)
             this.height = this.right.height + 1;
         }
     };
