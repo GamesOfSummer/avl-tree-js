@@ -65,12 +65,14 @@ class Node {
             }
 
             if (leftHeight > rightHeight + 1) {
+                //do I need to double rotate?
                 if (leftRightHeight > leftLeftHeight) {
                     this.left.rotateRight();
                 }
 
                 this.rotateLeft();
             } else if (rightHeight > leftHeight + 1) {
+                //do I need to double rotate?
                 if (rightLeftHeight > rightRightHeight) {
                     this.right.rotateLeft();
                 }
@@ -89,6 +91,7 @@ class Node {
     }
 
     rotateLeft() {
+        //solution from teacher
         const dataBefore = this.data;
         const rightBefore = this.right;
         this.data = this.left.data;
