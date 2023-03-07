@@ -101,26 +101,21 @@ class Node {
         this.updateHeights();
     }
     rotateRight() {
-        // store temp vars
-        const rightNode = this.right;
-        const rightRightNode = this.right.right;
-
-        const leftNode = this.left;
-        const leftLeftNode = this.left.left;
-
+        // store temp vars - for setting to left after initial swaps are done
         const rootData = this.data;
-        const rightData = this.right.data;
+        const leftNode = this.left;
 
         // swap data
-        this.data = rightData;
+        this.data = this.right.data; // move data to root data
+        this.left = this.right; // rotate right into left (balance)
+        this.right = this.right.right; // pull right 'up' the tree (if needed)
+        this.left.right = this.left.left; //
+
+        // reassign left node after swap
+        this.left.left = leftNode;
         this.left.data = rootData;
 
-        // swap nodes
-        this.left = rightNode;
-        this.right = rightRightNode;
-        this.left.right = leftLeftNode;
-        this.left.left = leftNode;
-
+        //update heights as needed
         this.left.updateHeights();
         this.updateHeights();
     }
